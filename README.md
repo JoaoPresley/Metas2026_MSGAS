@@ -12,4 +12,4 @@ Acompanhar o apontamento de OSs dos TOMs
 ### __Obter os segintes dados__
 * Um gráfico pie para cada TOM de apontamentos corretos e incorretos
 * Um gráfico região TLG e CGR apontamentos corretos e incorretos (estilo PIE)
-* 
+* Teste comit marcando
