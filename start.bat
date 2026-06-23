@@ -1,0 +1,6 @@
+@echo off
+echo Verificando dependencias...
+pip install -r requirements.txt
+echo Iniciando Sistema de Metas MSGAS...
+streamlit run src/app.py
+pause
