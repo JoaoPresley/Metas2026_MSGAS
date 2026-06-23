@@ -6,7 +6,17 @@ st.set_page_config(
     layout="wide"
 )
 
-st.sidebar.title("Navegação")
+st.title("🚀 Sistema de Metas MSGÁS")
 
-st.markdown("# Sistema de Metas MSGÁS")
-st.write("Selecione uma página na barra lateral para começar.")
+st.markdown("""
+### Bem-vindo!
+O sistema foi carregado com sucesso. 
+
+**Para navegar entre as funcionalidades, utilize a barra lateral à esquerda.**
+
+1. **Página Inicial**: Seleção de arquivos e processamento inicial.
+2. **Análise da Meta**: Visualização de gráficos consolidados.
+3. **Acompanhamento Pessoal**: Filtros por técnico (TOM).
+""")
+
+st.sidebar.success("Selecione uma página acima.")
