@@ -41,6 +41,12 @@ else:
 
     if 'compiled_df' in st.session_state:
         df = st.session_state.compiled_df
+
+        subsetores = ["CGR", "TLG"]
+        selected_setor = st.selectbox("Selecione o setor", subsetores)
+
+        df = df[df['ORG_manut'].str.contains(selected_setor)]
+
         figs = model.generate_pie_charts(df, title_prefix="Geral")
         
         c1, c2, c3 = st.columns(3)
