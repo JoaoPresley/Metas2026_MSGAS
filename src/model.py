@@ -143,7 +143,7 @@ class MetasModel:
         s_err = len(servicos[servicos["Valida serviço"] == False])
         
         # 3. Alcance da Meta (Geral)
-        total_ok = v_ok + s_ok
+        total_ok = v_ok
         total_err = v_err + s_err
         
         figs = []
