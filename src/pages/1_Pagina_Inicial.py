@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from model import MetasModel
+from src.model import MetasModel
 
 # Fallback for Tkinter in non-desktop environments
 def get_file_path():
