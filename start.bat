@@ -42,8 +42,6 @@ call %VENV_PATH%\Scripts\activate.bat
 echo [INFO] Verificando dependencias (isso pode demorar um pouco) ...
 !PY_CMD! -m pip install -r requirements.txt -qq
 
-pause
-
 :: 6. Roda o streamlit
 echo [INFO] Executando streamlit run src\app.py
 streamlit run src\app.py
