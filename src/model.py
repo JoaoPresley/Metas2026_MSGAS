@@ -40,7 +40,8 @@ class MetasModel:
             return str(d)
 
     def process_raw_data(self, file_path, start_date, end_date):
-        df = pd.read_excel(file_path, sheet_name='IFS_TASK_CLOCKING',
+        df = pd.read_excel(file_path,
+                           sheet_name='IFS_TASK_CLOCKING',
                            usecols=["TASK_SEQ", "TASK_DESCRIPTION", "CLOCKING_CATEGORY", 
                                    "CLOCKING_TYPE", "START_TIME", "STOP_TIME", 
                                    "WORK_HOURS", "ORGANIZATION_ID", "EMPLOYEE_ID"])
@@ -148,7 +149,7 @@ class MetasModel:
         figs = []
         cores = ["#3b6fe4", "#d36e3d"]
         
-        # Chart 1
+        # Chart 1 - Viagens
         fig1, ax1 = plt.subplots()
         if (v_ok + v_err) > 0:
             ax1.pie([v_ok, v_err], labels=[f"{v_ok} OK", f"{v_err} Erro"], autopct='%1.1f%%', colors=cores, explode=[0.1, 0.1] if v_err > 0 else [0, 0])
@@ -157,7 +158,7 @@ class MetasModel:
         ax1.set_title(f"{title_prefix} - Viagens")
         figs.append(fig1)
         
-        # Chart 2
+        # Chart 2 - Serviços
         fig2, ax2 = plt.subplots()
         if (s_ok + s_err) > 0:
             ax2.pie([s_ok, s_err], labels=[f"{s_ok} OK", f"{s_err} Erro"], autopct='%1.1f%%', colors=cores, explode=[0.1, 0.1] if s_err > 0 else [0, 0])
@@ -166,7 +167,7 @@ class MetasModel:
         ax2.set_title(f"{title_prefix} - Serviços")
         figs.append(fig2)
         
-        # Chart 3
+        # Chart 3 - Metas
         fig3, ax3 = plt.subplots()
         if (total_ok + total_err) > 0:
             ax3.pie([total_ok, total_err], labels=[f"{total_ok} OK", f"{total_err} Erro"], autopct='%1.1f%%', colors=cores, explode=[0.1, 0.1] if total_err > 0 else [0, 0])
