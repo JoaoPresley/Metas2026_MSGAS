@@ -12,7 +12,9 @@ with col_btn:
     compilar = st.button("Compilar")
 
 @st.cache_data
-def get_compiled_data(file_path):
+def get_compiled_data(file_path, last_modified):
+    #file_path -> endereço no .xlxs
+    #last_modified -> para ler o arquivo se for modificado, e não pegar do cache
     df = pd.read_excel(file_path)
     return model.validate_compiled_data(df)
 
@@ -28,7 +30,9 @@ else:
 
     if compilar:
         try:
-            df = get_compiled_data(file_path)
+            modified_time = os.path.getmtime(file_path)
+
+            df = get_compiled_data(file_path, modified_time)
             st.session_state.compiled_df = df
             st.success("Dados compilados!")
         except Exception as e:

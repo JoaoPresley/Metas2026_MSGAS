@@ -2,5 +2,6 @@
 *.env
 *teste*
 *__pycach*
+.venv/
 *.xlsx
-resultado_analise*
+resultado_analise/
