@@ -23,9 +23,10 @@ model = MetasModel()
 
 col1, col2 = st.columns(2)
 with col1:
-    data_inicio = st.date_input("Data Início", value=datetime(2026, 5, 1))
+    now = datetime.now()
+    data_inicio = st.date_input("Data Início", value=datetime(2026, 4, 1))
 with col2:
-    data_fim = st.date_input("Data Fim", value=datetime(2026, 5, 31))
+    data_fim = st.date_input("Data Fim", value=datetime(now.year, now.month, now.day))
 
 if 'file_path' not in st.session_state:
     st.session_state.file_path = None
