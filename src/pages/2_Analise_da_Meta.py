@@ -30,9 +30,7 @@ else:
 
     if compilar:
         try:
-            modified_time = os.path.getmtime(file_path)
-
-            df = get_compiled_data(file_path, modified_time)
+            df = get_compiled_data(file_path)
             st.session_state.compiled_df = df
             st.success("Dados compilados!")
         except Exception as e:
