@@ -65,7 +65,18 @@ if st.button("Executar Análise", disabled=not btn_enabled):
             file_name = f"analise_{data_inicio}_a_{data_fim}.xlsx"
             full_path = os.path.abspath(os.path.join(output_dir, file_name))
             
-            df_result.to_excel(full_path, index=False)
+            df_result.to_excel(full_path,
+                               columns=[
+                                   "ID_tarefa",
+                                   "Descricao",
+                                   "TOM",
+                                   "Tipo_temporal",
+                                   "Tempo_inicio",
+                                   "Horas_trabalhadas",
+                                   "Tempo_fim",
+                                   "Valida serviço",
+                                   "Motivo inconsistente"
+                               ],index=False)
             
             st.success(f"Análise concluída!")
             st.info(f"Caminho: {full_path}")
