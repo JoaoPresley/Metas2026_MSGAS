@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from src.model import MetasModel
+from model import MetasModel
 
 st.title("📊 Análise da Meta")
 

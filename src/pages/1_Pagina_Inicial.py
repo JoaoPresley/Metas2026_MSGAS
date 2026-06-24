@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from src.model import MetasModel
+from model import MetasModel
 
 # Fallback for Tkinter in non-desktop environments
 def get_file_path():
@@ -71,6 +71,7 @@ if st.button("Executar Análise", disabled=not btn_enabled):
                                    "ID_tarefa",
                                    "Descricao",
                                    "TOM",
+                                   "ORG_manut",
                                    "Tipo_temporal",
                                    "Tempo_inicio",
                                    "Horas_trabalhadas",
