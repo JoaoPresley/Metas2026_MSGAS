@@ -122,7 +122,11 @@ class MetasModel:
             
         # Convert to boolean for internal use
         df["Valida serviço"] = df["Valida serviço"].map({
-            "TRUE": True, "FALSE": False, "1": True, "0": False, "1.0": True, "0.0": False
+            "TRUE": True, "FALSE": False,
+            "VERDADEIRO": True, "FALSO": False,
+            "1": True, "0": False,
+            "1.0": True,
+            "0.0": False
         })
         return df
 
