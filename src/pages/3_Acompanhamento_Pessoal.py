@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import numpy as np
-from model import MetasModel
+from src.model import MetasModel
 
 st.title("👤 Acompanhamento Pessoal")
 
