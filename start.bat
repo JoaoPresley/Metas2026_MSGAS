@@ -44,7 +44,7 @@ echo [INFO] Verificando dependencias (isso pode demorar um pouco) ...
 
 :: 6. Roda o streamlit
 echo [INFO] Executando streamlit run src\app.py
-streamlit run src\app.py
+streamlit run src\Pagina_inicial.py
 
 pause
 call deactive
