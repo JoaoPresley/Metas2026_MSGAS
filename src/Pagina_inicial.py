@@ -3,6 +3,27 @@ import os
 from datetime import datetime
 from model import MetasModel
 
+st.set_page_config(
+    page_title="Sistema de Metas MSGÁS",
+    page_icon="🚀",
+    layout="wide"
+)
+
+st.title("🚀 Sistema de Metas MSGÁS")
+
+st.markdown("""
+### Bem-vindo!
+O sistema foi carregado com sucesso. 
+
+**Para navegar entre as funcionalidades, utilize a barra lateral à esquerda.**
+
+1. **Página Inicial**: Seleção de arquivos e processamento inicial.
+2. **Análise da Meta**: Visualização de gráficos consolidados.
+3. **Acompanhamento Pessoal**: Filtros por técnico (TOM).
+""")
+
+#st.sidebar.success("Selecione uma página acima.")
+
 # Fallback for Tkinter in non-desktop environments
 def get_file_path():
     try:
@@ -17,7 +38,7 @@ def get_file_path():
     except:
         return None
 
-st.title("🚀 Página Inicial")
+st.markdown("---")
 
 model = MetasModel()
 
@@ -58,14 +79,14 @@ if st.button("Executar Análise", disabled=not btn_enabled):
     with st.spinner("Processando dados..."):
         try:
             df_result = model.process_raw_data(st.session_state.file_path, data_inicio, data_fim)
-            
+
             output_dir = "resultado_analise"
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-            
+
             file_name = f"analise_{data_inicio}_a_{data_fim}.xlsx"
             full_path = os.path.abspath(os.path.join(output_dir, file_name))
-            
+
             df_result.to_excel(full_path,
                                columns=[
                                    "ID_tarefa",
@@ -78,10 +99,11 @@ if st.button("Executar Análise", disabled=not btn_enabled):
                                    "Tempo_fim",
                                    "Valida serviço",
                                    "Motivo inconsistente"
-                               ],index=False)
-            
+                               ], index=False)
+
             st.success(f"Análise concluída!")
             st.info(f"Caminho: {full_path}")
             st.session_state.last_analysis_file = full_path
         except Exception as e:
             st.error(f"Erro: {e}")
+
