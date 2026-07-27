@@ -3,6 +3,12 @@ import pandas as pd
 import os
 from model import MetasModel
 
+st.set_page_config(
+    page_title="Sistema de Metas MSGÁS",
+    page_icon="🚀",
+    layout="wide"
+)
+
 st.title("📊 Análise da Meta")
 
 model = MetasModel()

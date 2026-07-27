@@ -3,6 +3,12 @@ import os
 from datetime import datetime
 from model import MetasModel
 
+st.set_page_config(
+    page_title="Sistema de Metas MSGÁS",
+    page_icon="🚀",
+    layout="wide"
+)
+
 # Fallback for Tkinter in non-desktop environments
 def get_file_path():
     try:

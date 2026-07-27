@@ -4,6 +4,12 @@ import os
 import numpy as np
 from model import MetasModel
 
+st.set_page_config(
+    page_title="Sistema de Metas MSGÁS",
+    page_icon="🚀",
+    layout="wide"
+)
+
 st.title("👤 Acompanhamento Pessoal")
 
 model = MetasModel()
