@@ -1,8 +1,14 @@
+from asyncio.windows_events import NULL
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 import re
+
+from pandas.core.reshape import encoding
+from pyarrow.lib import null
+
 
 class MetasModel:
     def __init__(self):
@@ -16,6 +22,20 @@ class MetasModel:
             "Calibrar torr", "Preparar esta", "Consolida", 
             "Palestra", "EQS", "recarga de tanque", "Treinamento", "test"
         ])
+
+        self.task_err = None
+
+    def fill_task_err(self, arq):
+        df = pd.read_csv(arq,
+                         encoding='latin1',
+                         sep=';',
+                         usecols=[#"Nº OS",
+                                  "Nº Tarefa"]
+                                  #"Início Real",
+                                  #"Descrição"]
+                         )
+        self.task_err = df["Nº Tarefa"]
+
 
     def formata_data(self, d):
         r = str(d).strip().lower().split()
@@ -40,6 +60,10 @@ class MetasModel:
             return str(d)
 
     def process_raw_data(self, file_path, start_date, end_date):
+
+        #Process de task with erros
+        self.fill_task_err(r"outliers/Tarefas_erro_TLG.csv")
+
         df = pd.read_excel(file_path,
                            sheet_name='IFS_TASK_CLOCKING',
                            usecols=["TASK_SEQ", "TASK_DESCRIPTION", "CLOCKING_CATEGORY", 
@@ -129,6 +153,8 @@ class MetasModel:
             "1.0": True,
             "0.0": False
         })
+
+        # If task (N° Tarefa) is in self.task_err df["Valida serviço"] = True
         return df
 
     def generate_pie_charts(self, df, title_prefix=""):

@@ -30,8 +30,10 @@ else:
 
     if compilar:
         try:
+            # Pega o arquivo depois que foi feita qualquer alteração
             modified_time = os.path.getmtime(file_path)
 
+            # Realiza a leitura do arquivo
             df = get_compiled_data(file_path, modified_time)
             st.session_state.compiled_df = df
             st.success("Dados compilados!")
