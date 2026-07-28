@@ -62,7 +62,7 @@ class MetasModel:
     def process_raw_data(self, file_path, start_date, end_date):
 
         #Process de task with erros
-        self.fill_task_err(r"outliers/Tarefas_erro_TLG.csv")
+        self.fill_task_err(r"src/outliers/Tarefas_erro_TLG.csv")
 
         df = pd.read_excel(file_path,
                            sheet_name='IFS_TASK_CLOCKING',
