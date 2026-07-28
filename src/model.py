@@ -115,7 +115,7 @@ class MetasModel:
         # For Serviços
         df_periodo.loc[df_periodo["Tipo_temporal"] == "Serviço", "Valida serviço"] = servicos_com_viagem.values
         # For Tasks in exception
-        df_periodo[df_periodo["ID_tarefa"].isin(self.task_err)] = True
+        df_periodo.loc[df_periodo["ID_tarefa"].isin(self.task_err), "Valida serviço"] = True
 
         def insert_motivo(row):
             if not row["Valida serviço"]:
