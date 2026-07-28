@@ -30,8 +30,13 @@ else:
 
     if compilar:
         try:
+            # Pega o arquivo depois que foi feita qualquer alteração
             modified_time = os.path.getmtime(file_path)
 
+            # Atualiza as OS que estão fora da meta se foi inseridas novas
+            model.fill_task_err(r"src/outliers/Tarefas_erro.csv")
+
+            # Realiza a leitura do arquivo
             df = get_compiled_data(file_path, modified_time)
             st.session_state.compiled_df = df
             st.success("Dados compilados!")
