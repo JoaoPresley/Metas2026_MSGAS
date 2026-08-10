@@ -20,7 +20,7 @@ class MetasModel:
         self.no_travel_regex = "|".join([
             "Caf", "sobreavi", "Patru", "Calibrar esta", "Sipat",
             "Calibrar torr", "Preparar esta", "Consolida",
-            "Palestra", "EQS", "recarga de tanque", "Treinamento", "test"
+            "Palestra", "EQS", "recarga de tanque", "Treinamento", "test", "oficina"
         ])
 
         self.task_err = None
