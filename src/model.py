@@ -18,8 +18,8 @@ class MetasModel:
             "sep": "09", "oct": "10", "nov": "11", "dec": "12"
         }
         self.no_travel_regex = "|".join([
-            "Caf", "Troca de sobreavi", "Patru", "Calibrar esta", 
-            "Calibrar torr", "Preparar esta", "Consolida", 
+            "Caf", "sobreavi", "Patru", "Calibrar esta", "Sipat",
+            "Calibrar torr", "Preparar esta", "Consolida",
             "Palestra", "EQS", "recarga de tanque", "Treinamento", "test"
         ])
 
