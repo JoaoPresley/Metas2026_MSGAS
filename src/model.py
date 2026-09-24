@@ -104,7 +104,7 @@ class MetasModel:
         viagens_ok_mask = viagens_ok_mask | viagens["In Loco"]
         
         tarefas_viagem = viagens["ID_tarefa"].unique()
-        servicos_com_viagem = servicos["ID_tarefa"].isin(tarefas_viagem) | servicos["In Loco"]
+        servicos_ok = (servicos["ID_tarefa"].isin(tarefas_viagem) | servicos["In Loco"]) & servicos["Horas_trabalhadas"]<=8
 
         # Expand validation to the whole period dataframe
         df_periodo["Valida serviço"] = False
@@ -113,7 +113,7 @@ class MetasModel:
         # For Viagens
         df_periodo.loc[df_periodo["Tipo_temporal"] == "Viagem", "Valida serviço"] = viagens_ok_mask.values
         # For Serviços
-        df_periodo.loc[df_periodo["Tipo_temporal"] == "Serviço", "Valida serviço"] = servicos_com_viagem.values
+        df_periodo.loc[df_periodo["Tipo_temporal"] == "Serviço", "Valida serviço"] = servicos_ok.values
         # For Tasks in exception
         df_periodo.loc[df_periodo["ID_tarefa"].isin(self.task_err), "Valida serviço"] = True
 
