@@ -120,9 +120,9 @@ class MetasModel:
         def insert_motivo(row):
             if not row["Valida serviço"]:
                 if row["Tipo_temporal"] == "Viagem":
-                    return "Viagem curta ou longa"
+                    return "Viagem longa"
                 else:
-                    return "Serviço sem viagem"
+                    return "Serviço sem viagem ou mais que 8hrs"
             return ""
 
         df_periodo["Motivo inconsistente"] = df_periodo.apply(insert_motivo, axis=1)
