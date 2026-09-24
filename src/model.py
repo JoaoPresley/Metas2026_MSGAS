@@ -100,7 +100,7 @@ class MetasModel:
         servicos = df_periodo[df_periodo["Tipo_temporal"] == "Serviço"]
         viagens = df_periodo[df_periodo["Tipo_temporal"] == "Viagem"]
 
-        viagens_ok_mask = (viagens["Horas_trabalhadas"] >= 4/60) & (viagens["Horas_trabalhadas"] <= 8)
+        viagens_ok_mask = viagens["Horas_trabalhadas"] <= 8 #(viagens["Horas_trabalhadas"] >= 4/60) & (viagens["Horas_trabalhadas"] <= 8)
         viagens_ok_mask = viagens_ok_mask | viagens["In Loco"]
         
         tarefas_viagem = viagens["ID_tarefa"].unique()
