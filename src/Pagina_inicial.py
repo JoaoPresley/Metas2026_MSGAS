@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from model import MetasModel
+from models.model import MetasModel
 
 st.set_page_config(
     page_title="Sistema de Metas MSGÁS",
