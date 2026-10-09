@@ -15,8 +15,8 @@ class API:
         dotenv.load_dotenv()
 
         self.__url_api = os.getenv("BASE_API_URL")
-        self.__USERNAME = os.getenv("USERNAME")
-        self.__PASSWORD = os.getenv("PASSWORD")
+        self.__USERNAME = os.getenv("IFS_USERNAME")
+        self.__PASSWORD = os.getenv("IFS_PASSWORD")
 
         # Define a sessão
         self.session = requests.Session()
