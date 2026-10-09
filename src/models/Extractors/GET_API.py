@@ -8,6 +8,10 @@ import pandas as pd
 # noinspection PyUnhashable
 class API:
     def __init__(self):
+        """Inicializa as variaveis de API
+        atributos:
+            session: sessão aberta para fazer requisições
+        """
         dotenv.load_dotenv()
 
         self.__url_api = os.getenv("BASE_API_URL")
@@ -20,6 +24,10 @@ class API:
                                               "AppleWebKit/537.36 (KHTML, like Gecko) "
                                               "Chrome/154.0.0.0 Safari/537.36"})
     def get_dataframe(self):
+        """Utiliza a API para obter os dados necessários do IFS afim de analisar a meta
+
+        :return: dataframe
+        """
         try:
             response = self.session.get(self.__url_api, allow_redirects=True)
             response.raise_for_status()
@@ -37,6 +45,12 @@ class API:
             print(f"Correu um erro inesperado na requisição: {err}")
 
     def __login(self, session, response):
+        """Realiza o login  na sessão do IFS
+
+        :param session: sessão aperta que estará realizando a requisições REST
+        :param response: resposta da requisição que fora tentado realizar
+        :return: response: resposta da requisição que fora realizada
+        """
         # A resposta possui um link que é o link de login
         login_url = response.url
         try:
@@ -71,7 +85,13 @@ class API:
 
         except requests.exceptions.HTTPError as err:
             print(f"Erro na etapa de login: {err}")
-    def __make_dataframe(response):
+    def __make_dataframe(self, response):
+        """Recebe a resposta da requisição da API e trata ela
+        para um dataframe com as colunas necessárias para a análise.
+
+        :param: response: resposta da requisição à API
+        :return: dataframe
+        """
         # Cria um dataframe com o resultado da requisição
         colunas = [
             'ClockingSeq',
