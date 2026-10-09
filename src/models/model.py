@@ -70,49 +70,52 @@ class MetasModel:
         except:
             return str(d)
 
-    def process_raw_data(self, file_path, start_date, end_date):
-        """Processa os dados do arquivo com base no inicio e término
-
-        :param file_path: Caminho para o arquivo que está sendo analisado
-        :param start_date: YYYY/MM/DD Data que será iniciado a analise
-        :param end_date: YYYY/MM/DD Data que será iniciado a analise
-        :return: data_frame com os dados tratados e validados no periodo solicitado
+    def process_raw_data(self, file_path=None, start_date=None, end_date=None):
+        """Processa os dados consumindo a API.
+        A fonte de dados via arquivo excel foi substituída pela API.
+        Filtros de data foram removidos da extração conforme requisitos.
         """
-        #Process de task with erros
+        # Process de task with erros
         self.fill_task_err(r"src/outliers/Tarefas_erro.csv")
 
-        df = pd.read_excel(file_path,
-                           sheet_name='IFS_TASK_CLOCKING',
-                           usecols=["TASK_SEQ", "TASK_DESCRIPTION", "CLOCKING_CATEGORY", 
-                                   "CLOCKING_TYPE", "START_TIME", "STOP_TIME", 
-                                   "WORK_HOURS", "ORGANIZATION_ID", "EMPLOYEE_ID"])
-        
+        # Consome os dados pela API
+        from models.Extractors.GET_API import API
+        api = API()
+        df = api.get_dataframe()
+
+        # Mapeamento para as colunas utilizadas no sistema
+        # Original esperado pela API: 'ClockingSeq', 'TaskSeq', 'ClockingType', 'ClockingCategory', 
+        # 'EmployeeId', 'StartTime', 'StopTime', 'WorkHours', 'Site', 'TaskDescription', 
+        # 'OrganizationId', 'WorkTypeID'
         df.rename(columns={
-            "TASK_SEQ": "ID_tarefa",
-            "TASK_DESCRIPTION": "Descricao",
-            "CLOCKING_CATEGORY": "Tipo_temporal",
-            "CLOCKING_TYPE": "Valida_registro",
-            "START_TIME": "Tempo_inicio",
-            "STOP_TIME": "Tempo_fim",
-            "WORK_HOURS": "Horas_trabalhadas",
-            "ORGANIZATION_ID": "ORG_manut",
-            "EMPLOYEE_ID": "TOM"
+            "TaskSeq": "ID_tarefa",
+            "TaskDescription": "Descricao",
+            "ClockingCategory": "Tipo_temporal",
+            "ClockingType": "Valida_registro",
+            "StartTime": "Tempo_inicio",
+            "StopTime": "Tempo_fim",
+            "WorkHours": "Horas_trabalhadas",
+            "OrganizationId": "ORG_manut",
+            "EmployeeId": "TOM",
+            "WorkTypeID": "Tipo_Manut"
         }, inplace=True)
 
+        # Garante a tipagem correta das colunas
+        df["Tempo_inicio"] = pd.to_datetime(df["Tempo_inicio"], errors='coerce')
+        df["Tempo_fim"] = pd.to_datetime(df["Tempo_fim"], errors='coerce')
+        df["Horas_trabalhadas"] = pd.to_numeric(df["Horas_trabalhadas"], errors='coerce')
+        df["ID_tarefa"] = df["ID_tarefa"].astype(str)
+        df["TOM"] = df["TOM"].astype(str)
+        df["Tipo_Manut"] = df["Tipo_Manut"].astype(str)
+
+        # Remover linhas sem tempo de início/fim
         df.dropna(subset=["Tempo_inicio", "Tempo_fim"], inplace=True)
+        # Filtro de organização
         df = df[df["ORG_manut"].isin(["MCGR", "OCGR", "TLG"])]
 
-        df["Tempo_inicio"] = df["Tempo_inicio"].apply(self.formata_data)
-        df["Tempo_fim"] = df["Tempo_fim"].apply(self.formata_data)
-        df["Tempo_inicio"] = pd.to_datetime(df["Tempo_inicio"], format="%d/%m/%Y %H:%M:%S")
-        df["Tempo_fim"] = pd.to_datetime(df["Tempo_fim"], format="%d/%m/%Y %H:%M:%S")
-
-        # Apartir daqui é análise dos dados
-        mask = (df["Tempo_inicio"] >= pd.to_datetime(start_date)) & (df["Tempo_inicio"] <= pd.to_datetime(end_date))
-        df_periodo = df[mask].copy()
+        # Resetar índice antes da análise
+        df_periodo = df.copy()
         df_periodo.reset_index(drop=True, inplace=True)
-
-        print("!!!!!!!!!!Processa os dados do arquivo!!!!!!!!")
 
         return Analyses.analyse(df_periodo)
 
@@ -159,12 +162,12 @@ class MetasModel:
         :return: figura com 3 gráficos de torta
         """
         # 1. Viagens OK vs Não OK
-        viagens = df[df["Tipo_temporal"] == "Viagem"]
+        viagens = df[df["Tipo_temporal"] == "Travel"]
         v_ok = len(viagens[viagens["Valida serviço"] == True])
         v_err = len(viagens[viagens["Valida serviço"] == False])
         
         # 2. Serviços com Viagem vs Sem Viagem
-        servicos = df[df["Tipo_temporal"] == "Serviço"]
+        servicos = df[df["Tipo_temporal"] == "Work"]
         s_ok = len(servicos[servicos["Valida serviço"] == True])
         s_err = len(servicos[servicos["Valida serviço"] == False])
         
@@ -203,3 +206,37 @@ class MetasModel:
         figs.append(fig3)
         
         return figs
+
+def show_dataframe(df):
+    """Prepara a tabela para apresentar o que de fato o usuario precisa ver
+
+    :param df: dataframe utilizado na analise
+    :return: dataframe para visualizar
+    """
+    # Colunas que serão vizualizadas
+    colunas = [
+        'ID_tarefa',
+        'TOM',
+        'Tipo_temporal',
+        'Tipo_Manut',
+        'Tempo_inicio',
+        'Horas_trabalhadas',
+        'Tempo_fim',
+        'Site',
+        'Descricao',
+        'ORG_manut',
+        'In Loco',
+        'Valida serviço',
+        'Motivo inconsistente'
+    ]
+    # Variavel de retorno
+    df_return = df[colunas]
+
+    # Edita as datas de início e fim
+    df_return['Tempo_inicio'] = df_return['Tempo_inicio'].apply(lambda x: str(x)[:-6])#, axis=1)
+    df_return['Tempo_fim'] = df_return['Tempo_fim'].apply(lambda x: str(x)[:-6])#, axis=1)
+
+    # Edita o tipo temporal para português
+    df_return["Tipo_temporal"] = df_return["Tipo_temporal"].apply(lambda x: "Viagem" if x == "Travel" else "Serviço")
+
+    return df_return

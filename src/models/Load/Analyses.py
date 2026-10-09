@@ -8,13 +8,14 @@ class Analyses:
         # Verifica se o serviço é feito sem necessidade de viagem
         df_periodo["In Loco"] = df_periodo["Descricao"].str.contains(MetasModel.no_travel_regex, case=False, na=False)
 
+
         # Valida tarefas
         df_periodo = self.__validate_tasks(df_periodo,MetasModel.task_err)
 
         # Cria a coluna de motivo inconsistente
         def insert_motivo(row):
             if not row["Valida serviço"]:
-                if row["Tipo_temporal"] == "Viagem":
+                if row["Tipo_temporal"] == "Travel":
                     return "Viagem longa"
                 else:
                     return "Serviço sem viagem ou mais que 8hrs"
@@ -31,8 +32,8 @@ class Analyses:
         :return:
         """
         # Logic for validation
-        servicos = df_periodo[df_periodo["Tipo_temporal"] == "Serviço"]
-        viagens = df_periodo[df_periodo["Tipo_temporal"] == "Viagem"]
+        servicos = df_periodo[df_periodo["Tipo_temporal"] == "Work"]
+        viagens = df_periodo[df_periodo["Tipo_temporal"] == "Travel"]
 
         viagens_ok_mask = viagens[
                               "Horas_trabalhadas"] <= 8  # (viagens["Horas_trabalhadas"] >= 4/60) & (viagens["Horas_trabalhadas"] <= 8)
@@ -47,9 +48,9 @@ class Analyses:
 
         # Mapping results back to the main dataframe
         # For Viagens
-        df_periodo.loc[df_periodo["Tipo_temporal"] == "Viagem", "Valida serviço"] = viagens_ok_mask.values
+        df_periodo.loc[df_periodo["Tipo_temporal"] == "Travel", "Valida serviço"] = viagens_ok_mask.values
         # For Serviços
-        df_periodo.loc[df_periodo["Tipo_temporal"] == "Serviço", "Valida serviço"] = servicos_ok.values
+        df_periodo.loc[df_periodo["Tipo_temporal"] == "Work", "Valida serviço"] = servicos_ok.values
         # For Tasks in exception
         df_periodo.loc[df_periodo["ID_tarefa"].isin(task_err), "Valida serviço"] = True
 

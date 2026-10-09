@@ -1,7 +1,5 @@
 import streamlit as st
-import os
-from datetime import datetime
-from models.model import MetasModel
+from models.model import MetasModel, show_dataframe
 
 st.set_page_config(
     page_title="Sistema de Metas MSGÁS",
@@ -9,101 +7,55 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🚀 Sistema de Metas MSGÁS")
+st.title("🚀 Análise da Meta (Geral)")
 
 st.markdown("""
-### Bem-vindo!
-O sistema foi carregado com sucesso. 
-
-**Para navegar entre as funcionalidades, utilize a barra lateral à esquerda.**
-
-1. **Página Inicial**: Seleção de arquivos e processamento inicial.
-2. **Análise da Meta**: Visualização de gráficos consolidados.
-3. **Acompanhamento Pessoal**: Filtros por técnico (TOM).
+Esta é a visão geral das metas e consolidação dos dados de manutenção. 
+Para visualizar os dados por técnico, utilize a aba **Acompanhamento Pessoal** no menu lateral.
 """)
-
-#st.sidebar.success("Selecione uma página acima.")
-
-# Fallback for Tkinter in non-desktop environments
-def get_file_path():
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-        root = tk.Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-        file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
-        root.destroy()
-        return file_path
-    except:
-        return None
-
-st.markdown("---")
 
 model = MetasModel()
 
-col1, col2 = st.columns(2)
-with col1:
-    now = datetime.now()
-    data_inicio = st.date_input("Data Início", value=datetime(2026, 4, 1))
-with col2:
-    data_fim = st.date_input("Data Fim", value=datetime(now.year, now.month, now.day))
+# Apenas o botão "Compilar" para iniciar a extração de dados
+col_btn, _ = st.columns([1, 4])
+with col_btn:
+    compilar = st.button("Compilar Dados da API")
 
-if 'file_path' not in st.session_state:
-    st.session_state.file_path = None
-
-col_btn1, col_btn2 = st.columns([1, 3])
-with col_btn1:
-    if st.button("Selecionar Arquivo"):
-        path = get_file_path()
-        if path:
-            st.session_state.file_path = path
-        else:
-            st.info("Selecione o arquivo manualmente no campo abaixo (ou arraste e solte):")
-
-uploaded_file = st.file_uploader("Ou faça o upload do arquivo .xlsx", type="xlsx")
-if uploaded_file:
-    temp_dir = "resultado_analise"
-    if not os.path.exists(temp_dir): os.makedirs(temp_dir)
-    temp_path = os.path.join(temp_dir, "input_manual.xlsx")
-    with open(temp_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-    st.session_state.file_path = temp_path
-
-if st.session_state.file_path:
-    st.success(f"Arquivo pronto: {st.session_state.file_path}")
-
-btn_enabled = st.session_state.file_path is not None and data_inicio <= data_fim
-
-if st.button("Executar Análise", disabled=not btn_enabled):
-    with st.spinner("Processando dados..."):
+# Lógica de atualização/extração
+if compilar:
+    with st.spinner("Consultando API e processando regras de negócio..."):
         try:
-            df_result = model.process_raw_data(st.session_state.file_path, data_inicio, data_fim)
-
-            output_dir = "resultado_analise"
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-
-            file_name = f"analise_{data_inicio}_a_{data_fim}.xlsx"
-            full_path = os.path.abspath(os.path.join(output_dir, file_name))
-
-            df_result.to_excel(full_path,
-                               columns=[
-                                   "ID_tarefa",
-                                   "Descricao",
-                                   "TOM",
-                                   "ORG_manut",
-                                   "Tipo_temporal",
-                                   "Tempo_inicio",
-                                   "Horas_trabalhadas",
-                                   "Tempo_fim",
-                                   "Valida serviço",
-                                   "Motivo inconsistente"
-                               ], index=False)
-
-            st.success(f"Análise concluída!")
-            st.info(f"Caminho: {full_path}")
-            st.session_state.last_analysis_file = full_path
+            # Ler/processar a planilha auxiliar, atualizar a API, e rodar a análise de metas
+            # Toda essa lógica está encapsulada dentro de process_raw_data()
+            df_result = model.process_raw_data()
+            
+            # Persistir na sessão
+            st.session_state.compiled_df = df_result
+            st.success("Dados compilados e armazenados em memória com sucesso!")
         except Exception as e:
-            st.error(f"Erro: {e}")
+            st.error(f"Erro durante o carregamento da API: {e}")
 
+# Lógica de exibição caso os dados já estejam em memória
+if 'compiled_df' in st.session_state:
+    df = st.session_state.compiled_df
+
+    st.markdown("---")
+    subsetores = ["CGR", "TLG"]
+    selected_setor = st.selectbox("Selecione o setor", subsetores)
+
+    # Filtrar pelo setor selecionado
+    df_filtered = df[df['ORG_manut'].str.contains(selected_setor, na=False)]
+
+    # Gerar e exibir gráficos
+    figs = model.generate_pie_charts(df_filtered, title_prefix=f"Geral - {selected_setor}")
+    
+    c1, c2, c3 = st.columns(3)
+    with c1: st.pyplot(figs[0])
+    with c2: st.pyplot(figs[1])
+    with c3: st.pyplot(figs[2])
+    
+    st.subheader("Dados Consolidados")
+    st.dataframe(show_dataframe(df_filtered))
+    #show_dataframe(df_filtered)
+else:
+    st.info("Nenhum dado em memória. Clique em 'Compilar Dados da API' para iniciar a extração.")
