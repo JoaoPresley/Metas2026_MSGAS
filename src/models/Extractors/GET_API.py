@@ -61,6 +61,9 @@ class API:
                                           data=payload,
                                           allow_redirects=True)
             response_login.raise_for_status()
+            # Caso o usuário e senha estejam errados
+            if "login?rf=" in response_login.url:
+                raise Exception("Falha de login, usuário ou senha incorretos")
 
             # O response me devolve um formulário html para o callback com os dados para solicitar o call back
             soup = BeautifulSoup(response_login.content, "html.parser")
