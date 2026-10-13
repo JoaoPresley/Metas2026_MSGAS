@@ -1,4 +1,20 @@
-*.idea
+# Váriaveis privadas
 *.env
-*teste*
+
+# Do python
+*.idea
 *__pycach*
+.venv/
+
+# Arquivo que armazena o resultados da análise
+resultado_analise/
+*.xlsx
+
+# Arquivos de teste
+*teste*
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
